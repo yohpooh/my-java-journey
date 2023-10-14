@@ -6,6 +6,7 @@ import javax.imageio.ImageIO;
 import org.lwjgl.BufferUtils;
 
 import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL13.*;
 
 
 public class texture {
@@ -54,8 +55,12 @@ public class texture {
 		}
 	}
 	
-	public void bind()
+	public void bind(int sampler)
 	{
-		glBindTexture(GL_TEXTURE_2D, id);
+		if(sampler >= 0 && sampler <= 31)
+		{			
+			glActiveTexture(GL_TEXTURE0 + sampler);
+			glBindTexture(GL_TEXTURE_2D, id);
+		}
 	}
 }
