@@ -4,6 +4,7 @@ import org.lwjgl.glfw.GLFWVidMode;
 import static org.lwjgl.opengl.GL11.*;
 
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 
 public class main {
@@ -26,6 +27,8 @@ public class main {
 		
 		glfwMakeContextCurrent(mainWindow); //to make something on window
 		GL.createCapabilities();
+		
+		camera cam = new camera(640, 480);
 		glEnable(GL_TEXTURE_2D);
 		float[] vertices = new float[]
 				{
@@ -52,9 +55,13 @@ public class main {
 		shader shade = new shader("shader");
 		texture tex = new texture("./res/texture.png");
 		
-		Matrix4f projection = new Matrix4f().ortho2D(-1200/2, 640/2, -480/2, 480/2).scale(128);
-		//Matrix4f scale = new Matrix4f().scale(32);
-		//Matrix4f target = new Matrix4f();
+		/*
+		Matrix4f projection = new Matrix4f()
+				.ortho2D(-640/2, 640/2, -480/2, 480/2)
+				.scale(128);
+		*/
+		Matrix4f scale = new Matrix4f().scale(64);
+		Matrix4f target = new Matrix4f();
 		
 		//projection.mul(scale, target);
 		
@@ -67,7 +74,7 @@ public class main {
 		//int colorGreen = 0;
 		
 		while(!glfwWindowShouldClose(mainWindow)) { //update window until it close
-			glfwPollEvents();
+			target = scale;
 			if(glfwGetKey(mainWindow, GLFW_KEY_SPACE) == GL_TRUE)
 			{
 				/*
@@ -85,12 +92,13 @@ public class main {
 				colorGreen = 0;
 				*/
 			}
+			glfwPollEvents();
 			
 			glClear(GL_COLOR_BUFFER_BIT); //make the window color black and clear everything to black
 			shade.bind();
-			tex.bind(0);
 			shade.setUniform("sampler", 0);
-			shade.setUniform("projection", projection);
+			shade.setUniform("projection", cam.getProjection().mul(target));
+			tex.bind(0);
 			mod.render();
 			
 			/*
