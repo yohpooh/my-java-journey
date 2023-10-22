@@ -1,5 +1,6 @@
 import static org.lwjgl.glfw.GLFW.*; //use to import glfw which use for creating window
 import org.lwjgl.opengl.GL;
+import org.lwjgl.system.macosx.LibSystem;
 import org.lwjgl.glfw.GLFWVidMode;
 import static org.lwjgl.opengl.GL11.*;
 
@@ -16,6 +17,12 @@ public class main {
 		}
 		
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+		
+		window mainWindow = new window();
+		mainWindow.setSize(640, 480);
+		mainWindow.createWindow("Practice");
+		
+		/*
 		long mainWindow = glfwCreateWindow(640, 480, "Game 2D Practice", 0, 0); //creation of window
 		if(mainWindow == 0) { // checks if the window is working
 			throw new IllegalStateException("Failed to create window");
@@ -26,9 +33,10 @@ public class main {
 		glfwShowWindow(mainWindow);//show the main window
 		
 		glfwMakeContextCurrent(mainWindow); //to make something on window
+		*/
 		GL.createCapabilities();
 		
-		camera cam = new camera(640, 480);
+		camera cam = new camera(mainWindow.getWidth(), mainWindow.getHeight());
 		glEnable(GL_TEXTURE_2D);
 		float[] vertices = new float[]
 				{
@@ -60,9 +68,20 @@ public class main {
 				.ortho2D(-640/2, 640/2, -480/2, 480/2)
 				.scale(128);
 		*/
-		Matrix4f scale = new Matrix4f().scale(64);
+		Matrix4f scale = new Matrix4f()
+				.translate(new Vector3f(100, 0, 0)) //move the texture to the right
+				.scale(128);
 		Matrix4f target = new Matrix4f();
 		
+		cam.setPosition(new Vector3f(-100, 0, 0)); //put back the texture in the middle
+		
+		double frame_cap = 1.0 / 60.0; //1 second per 60 frames
+		
+		double frame_time = 0; //seconds
+		int frames = 0; //how many frames passed
+		
+		double time = timer.getTime();
+		double unprocessed = 0;
 		//projection.mul(scale, target);
 		
 		//glClearColor(255, 255, 255, 0); //change the color to white using rgba
@@ -73,35 +92,59 @@ public class main {
 		//int colorBlue = 0;
 		//int colorGreen = 0;
 		
-		while(!glfwWindowShouldClose(mainWindow)) { //update window until it close
-			target = scale;
-			if(glfwGetKey(mainWindow, GLFW_KEY_SPACE) == GL_TRUE)
-			{
-				/*
-				colorRed = 1;
-				colorBlue = 0;
-				colorGreen = 0;
-				*/
-				glfwSetWindowShouldClose(mainWindow, GL_TRUE);
-			}
-			else 
-			{
-				/*
-				colorRed = 0;
-				colorBlue = 0;
-				colorGreen = 0;
-				*/
-			}
-			glfwPollEvents();
+		while(mainWindow.shouldClose() /*!glfwWindowShouldClose(mainWindow)*/) { //update window until it close
+			boolean can_render = false;
+			double time_2 = timer.getTime();
+			double passed = time_2 - time;
 			
-			glClear(GL_COLOR_BUFFER_BIT); //make the window color black and clear everything to black
-			shade.bind();
-			shade.setUniform("sampler", 0);
-			shade.setUniform("projection", cam.getProjection().mul(target));
-			tex.bind(0);
-			mod.render();
+			unprocessed += passed;
+			frame_time += passed;
 			
-			/*
+			time = time_2;
+			
+			while(unprocessed >= frame_cap)
+			{				
+				unprocessed-=frame_cap;
+				can_render = true;
+				
+				target = scale;
+
+					if(glfwGetKey(mainWindow.getWindow(), GLFW_KEY_ESCAPE) == GL_TRUE)
+					{
+						//colorRed = 1;
+						//colorBlue = 0;
+						//colorGreen = 0;
+						System.out.println("Pressed");
+						glfwSetWindowShouldClose(mainWindow.getWindow(), GL_TRUE);
+					}
+					/*
+					else 
+					{
+						//colorRed = 0;
+						//colorBlue = 0;
+						//colorGreen = 0;
+					}
+					*/
+				glfwPollEvents();
+				
+				if(frame_time >= 1.0)
+				{
+					frame_time = 0;
+					System.out.println("FPS: " + frames);
+					frames = 0;
+				}
+			}
+			
+			if(can_render)
+			{
+				glClear(GL_COLOR_BUFFER_BIT); //make the window color black and clear everything to black
+				shade.bind();
+				shade.setUniform("sampler", 0);
+				shade.setUniform("projection", cam.getProjection().mul(target));
+				tex.bind(0);
+				mod.render();
+				
+				/*
 			glBegin(GL_QUADS); //insert a square
 			
 				glTexCoord2f(0,0);
@@ -118,9 +161,13 @@ public class main {
 
 				//glColor4f(colorRed, colorGreen, colorBlue, 0);
 			glEnd();
-			*/
+				 */
+				
+				mainWindow.swapBuffers();
+				//glfwSwapBuffers(mainWindow); //buffers this is essential to to make everything on windows to render		
+				frames++;
+			}
 			
-			glfwSwapBuffers(mainWindow); //buffers this is essential to to make everything on windows to render
 		}
 		glfwTerminate(); // clean the whole glfw
 	}
