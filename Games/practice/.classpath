@@ -72,5 +72,6 @@
 	<classpathentry kind="lib" path="libs/lwjgl-stb/lwjgl-stb-natives-windows-arm64.jar"/>
 	<classpathentry kind="lib" path="libs/lwjgl-stb/lwjgl-stb-natives-windows-x86.jar"/>
 	<classpathentry kind="lib" path="libs/lwjgl-stb/lwjgl-stb-sources.jar"/>
+	<classpathentry kind="lib" path="libs/joml-1.9.9.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
