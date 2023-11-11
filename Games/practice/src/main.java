@@ -11,6 +11,7 @@ import org.joml.Vector3f;
 public class main {
 	public main()
 	{
+		window.setStaticCallback();
 		if(!glfwInit()) {
 			System.err.println("Failed to initialize GLFW!");
 			System.exit(1);
@@ -20,6 +21,7 @@ public class main {
 		
 		window mainWindow = new window();
 		mainWindow.setSize(640, 480);
+		mainWindow.setFullscreen(false);
 		mainWindow.createWindow("Practice");
 		
 		/*
@@ -109,7 +111,7 @@ public class main {
 				
 				target = scale;
 
-					if(glfwGetKey(mainWindow.getWindow(), GLFW_KEY_ESCAPE) == GL_TRUE)
+					if(mainWindow.getInput().isKeyPressed(GLFW_KEY_ESCAPE))
 					{
 						//colorRed = 1;
 						//colorBlue = 0;
@@ -125,8 +127,8 @@ public class main {
 						//colorGreen = 0;
 					}
 					*/
-				glfwPollEvents();
 				
+				mainWindow.update();
 				if(frame_time >= 1.0)
 				{
 					frame_time = 0;

@@ -1,5 +1,6 @@
 import static org.lwjgl.glfw.GLFW.*;
 
+import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 
 public class window {
@@ -7,6 +8,20 @@ public class window {
 	
 	private int width, height;
 	private boolean fullscreen;
+	
+	private input input;
+	
+	public static void setStaticCallback()
+	{
+		glfwSetErrorCallback(new GLFWErrorCallback()
+				{
+					@Override
+					public void invoke(int error, long description) {
+						// TODO Auto-generated method stub
+						throw new IllegalStateException(GLFWErrorCallback.getDescription(description));					
+						}
+				});
+	}
 	
 	public window()
 	{
@@ -32,9 +47,12 @@ public class window {
 			GLFWVidMode videoMode = glfwGetVideoMode(glfwGetPrimaryMonitor()); 
 			glfwSetWindowPos(window, (videoMode.width() - width) / 2, (videoMode.height() - width) / 2); //center window 
 			
-			glfwShowWindow(window);
-			glfwMakeContextCurrent(window);
 		}
+
+		glfwShowWindow(window);
+		glfwMakeContextCurrent(window);
+		
+		input = new input(window);
 	}
 	
 	public boolean shouldClose()
@@ -45,6 +63,12 @@ public class window {
 	public void setFullscreen(boolean fullscreen)
 	{
 		this.fullscreen = fullscreen;
+	}
+	
+	public void update()
+	{
+		input.update();
+		glfwPollEvents();
 	}
 	
 	public void setSize(int width, int height) {
@@ -73,6 +97,11 @@ public class window {
 	public long getWindow()
 	{
 		return window;
+	}
+	
+	public input getInput() 
+	{
+		return input;
 	}
 	
 }
