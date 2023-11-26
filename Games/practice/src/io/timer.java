@@ -1,3 +1,4 @@
+package io;
 
 public class timer {
 	public static double getTime()

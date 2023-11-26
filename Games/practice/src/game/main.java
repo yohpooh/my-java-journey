@@ -1,8 +1,16 @@
+package game;
 import static org.lwjgl.glfw.GLFW.*; //use to import glfw which use for creating window
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.macosx.LibSystem;
 import org.lwjgl.glfw.GLFWVidMode;
 import static org.lwjgl.opengl.GL11.*;
+
+//io package
+import io.*;
+//render package
+import render.*;
+//world package
+import world.*;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
@@ -40,6 +48,9 @@ public class main {
 		
 		camera cam = new camera(mainWindow.getWidth(), mainWindow.getHeight());
 		glEnable(GL_TEXTURE_2D);
+		tileRenderer tiles = new tileRenderer();
+		
+		/*
 		float[] vertices = new float[]
 				{
 						-0.5f, 0.5f, 0, //top left		0
@@ -62,8 +73,9 @@ public class main {
 				};
 		
 		model mod = new model(vertices, texture, indices);
+		*/
 		shader shade = new shader("shader");
-		texture tex = new texture("./res/texture.png");
+		//texture tex = new texture("./res/texture.png");
 		
 		/*
 		Matrix4f projection = new Matrix4f()
@@ -71,8 +83,8 @@ public class main {
 				.scale(128);
 		*/
 		Matrix4f scale = new Matrix4f()
-				.translate(new Vector3f(100, 0, 0)) //move the texture to the right
-				.scale(128);
+				.translate(new Vector3f(0, 0, 0)) //move the texture to the right
+				.scale(16);
 		Matrix4f target = new Matrix4f();
 		
 		cam.setPosition(new Vector3f(-100, 0, 0)); //put back the texture in the middle
@@ -139,12 +151,12 @@ public class main {
 			
 			if(can_render)
 			{
-				glClear(GL_COLOR_BUFFER_BIT); //make the window color black and clear everything to black
-				shade.bind();
-				shade.setUniform("sampler", 0);
-				shade.setUniform("projection", cam.getProjection().mul(target));
-				tex.bind(0);
-				mod.render();
+				//glClear(GL_COLOR_BUFFER_BIT); //make the window color black and clear everything to black
+				//shade.bind();
+				//shade.setUniform("sampler", 0);
+				//shade.setUniform("projection", cam.getProjection().mul(target));
+				//mod.render();
+				//tex.bind(0);
 				
 				/*
 			glBegin(GL_QUADS); //insert a square
@@ -164,6 +176,11 @@ public class main {
 				//glColor4f(colorRed, colorGreen, colorBlue, 0);
 			glEnd();
 				 */
+				
+				for(int iNo = 0; iNo < 8; iNo++)
+				{
+					tiles.renderTile((byte)0, iNo, 0, shade, scale, cam);
+				}
 				
 				mainWindow.swapBuffers();
 				//glfwSwapBuffers(mainWindow); //buffers this is essential to to make everything on windows to render		

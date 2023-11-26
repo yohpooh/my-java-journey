@@ -1,3 +1,4 @@
+package render;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +20,7 @@ public class texture {
 		BufferedImage bi;
 		try
 		{
-			bi = ImageIO.read(new File(filename));
+			bi = ImageIO.read(new File("./textures/" + filename));
 			width = bi.getWidth(); 
 			height = bi.getHeight(); 
 			
